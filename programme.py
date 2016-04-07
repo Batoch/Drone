@@ -46,12 +46,12 @@ while 0 == 0:
     ]
 
     pitch, roll, yaw = sense.get_orientation().values()
-    pitch = pitch/360*20000
-    yaw = yaw/360*20000
+    pitch = pitch/360*50000
     yaw = 65535
     print ("pitch", pitch, "roll", roll, "yaw", yaw)
 
 
+    yaw = yaw/360*50000
 
 
 
@@ -69,25 +69,21 @@ while 0 == 0:
 
 
 
-    if pitch > 350 or roll < 10:
+    if pitch > 350 or pitch < 10:
         pitch = 0
 
     if pitch < 180:
-        pitch = roll/180*65535
+        pitch = pitch/180*65535
 
 
     if pitch >= 180:
-        pitch = roll/180*65535
-
-
-
+        pitch = pitch/180*65535
 
 
 
 
 
     print ("pitch", pitch, "roll mod", roll, "yaw", yaw)
-
 
 
 
@@ -113,7 +109,7 @@ while 0 == 0:
 
     c.commander.send_setpoint(0, 0, 0, 0)
     #time.sleep(0.1)
-    c.commander.send_setpoint(0, 0, 0, v)
+    c.commander.send_setpoint(pitch, roll, 0, v)
     time.sleep(0.1)
     c.commander.send_setpoint(0, 0, 0, 0)
 
@@ -121,4 +117,3 @@ while 0 == 0:
 
 
 #c.commander.send_setpoint(0, 0, 0, 20000)
-
