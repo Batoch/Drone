@@ -16,9 +16,10 @@ stick = stick.SenseStick()
 pitch = 0
 roll = 0
 yaw = 0
-puissance = 0
+puissance = 10000
 
-def joystick(puissance):
+def joystick():
+    global puissance
     while True:
         stick.wait() # block until an event is available
         print ("char=",stick.read().key)
@@ -26,21 +27,22 @@ def joystick(puissance):
 
 
         if joystick == 103: #haut
-            puissance = puissance + 10
+            puissance = puissance + 100
 
 
 
         if joystick == 108: #bas
-            puissance = puissance - 10
+            puissance = puissance - 50
 
-        return(puissance)
-
-
-
+        
 
 
 
 def getpos():
+    global pitch
+    global roll
+    global yaw
+
     pitch, roll, yaw = sense.get_orientation().values()
     print ("pitch", pitch, "roll", roll, "yaw", yaw)
 
@@ -128,7 +130,7 @@ while 0 == 0:
 
 
 
-
+    threading.Thread(target = getpos).start()
 
     print ("pitch", pitch, "roll mod", roll, "yaw", yaw)
 
