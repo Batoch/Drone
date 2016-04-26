@@ -1,5 +1,7 @@
 import cflib.crtp, cflib.crazyflie, time
 from sense_hat import SenseHat
+import threading, stick
+
 
 sense = SenseHat()
 
@@ -9,51 +11,40 @@ cflib.crtp.init_drivers()
 c=cflib.crazyflie.Crazyflie()
 c.open_link("radio://0/80/250K")
 
-#sense.show_message(message)
+stick = stick.SenseStick()
+
+pitch = 0
+roll = 0
+yaw = 0
+puissance = 0
+
+def joystick(puissance):
+    while True:
+        stick.wait() # block until an event is available
+        print ("char=",stick.read().key)
+        joystick = stick.read().key
 
 
-d = (c, 255, 0) #droite
-g = (255, 255, 0) #gauche
-h = (0, 255, 0) #haut
-b = (255, 255, 0) #bas
-o = (0, 0, 0) #vide
+        if joystick == 103: #haut
+            puissance = puissance + 10
 
 
-ecran = [
-    o, h, h, h, h, h, h, o,
-    g, o, o, o, o, o, o, d,
-    g, o, o, o, o, o, o, d,
-    g, o, o, o, o, o, o, d,
-    g, o, o, o, o, o, o, d,
-    g, o, o, o, o, o, o, d,
-    g, o, o, o, o, o, o, d,
-    o, b, b, b, b, b, b, o
-]
 
-v = 30000
+        if joystick == 108: #bas
+            puissance = puissance - 10
+
+        return(puissance)
 
 
-while 0 == 0:
-    ecran = [
-    o, h, h, h, h, h, h, o,
-    g, o, o, o, o, o, o, d,
-    g, o, o, o, o, o, o, d,
-    g, o, o, o, o, o, o, d,
-    g, o, o, o, o, o, o, d,
-    g, o, o, o, o, o, o, d,
-    g, o, o, o, o, o, o, d,
-    o, b, b, b, b, b, b, o
-    ]
 
+
+
+
+def getpos():
     pitch, roll, yaw = sense.get_orientation().values()
-    pitch = pitch/360*50000
-    yaw = 65535
     print ("pitch", pitch, "roll", roll, "yaw", yaw)
 
-
-    yaw = yaw/360*50000
-
-
+    yaw = yaw/360*65535
 
     #roll va de 0 a 360
     if roll > 350 or roll < 10:
@@ -82,14 +73,67 @@ while 0 == 0:
 
 
 
+    yaw = yaw/360*65535
+
+
+
+
+
+
+
+
+
+d = (c, 255, 0) #droite
+g = (255, 255, 0) #gauche
+h = (0, 255, 0) #haut
+b = (255, 255, 0) #bas
+o = (0, 0, 0) #vide
+
+
+ecran = [
+    o, h, h, h, h, h, h, o,
+    g, o, o, o, o, o, o, d,
+    g, o, o, o, o, o, o, d,
+    g, o, o, o, o, o, o, d,
+    g, o, o, o, o, o, o, d,
+    g, o, o, o, o, o, o, d,
+    g, o, o, o, o, o, o, d,
+    o, b, b, b, b, b, b, o
+    ]
+
+
+
+
+
+
+
+threading.Thread(target = joystick).start()
+
+
+
+
+
+
+while 0 == 0:
+    ecran = [
+    o, h, h, h, h, h, h, o,
+    g, o, o, o, o, o, o, d,
+    g, o, o, o, o, o, o, d,
+    g, o, o, o, o, o, o, d,
+    g, o, o, o, o, o, o, d,
+    g, o, o, o, o, o, o, d,
+    g, o, o, o, o, o, o, d,
+    o, b, b, b, b, b, b, o
+    ]
+
+
+
+
 
     print ("pitch", pitch, "roll mod", roll, "yaw", yaw)
 
 
 
-
-
-    yaw = yaw/360*65535
 
 
 
@@ -98,18 +142,18 @@ while 0 == 0:
 
     #sense.set_pixels(ecran)
     #d = (v, 255, 0)
-    v = v + 20
-
-    if v > 65535:
-        v = 65535
 
 
-    print ("puissance", v)
+    if puissance > 65535:
+        puissance = 65535
+
+
+    print ("puissance", puissance)
 
 
     c.commander.send_setpoint(0, 0, 0, 0)
     #time.sleep(0.1)
-    c.commander.send_setpoint(pitch, roll, 0, v)
+    c.commander.send_setpoint(pitch, roll, 0, puissance)
     time.sleep(0.1)
     c.commander.send_setpoint(0, 0, 0, 0)
 
@@ -117,3 +161,12 @@ while 0 == 0:
 
 
 #c.commander.send_setpoint(0, 0, 0, 20000)
+
+
+
+
+
+
+
+
+
