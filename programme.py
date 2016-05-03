@@ -16,23 +16,23 @@ stick = stick.SenseStick()
 pitch = 0
 roll = 0
 yaw = 0
-puissance = 10000
+puissance = 15000
 
 def joystick():
     global puissance
     while True:
         stick.wait() # block until an event is available
-        print ("char=",stick.read().key)
+        #print ("char=",stick.read().key)
         joystick = stick.read().key
 
 
         if joystick == 103: #haut
-            puissance = puissance + 100
+            puissance = puissance + 1000
 
 
 
         if joystick == 108: #bas
-            puissance = puissance - 50
+            puissance = puissance - 1000
 
         
 
@@ -44,20 +44,25 @@ def getpos():
     global yaw
 
     pitch, roll, yaw = sense.get_orientation().values()
+    if pitch < 165:
+        pitch = (pitch - 165) + 360
+    if pitch > 165:
+        pitch = pitch - 165
     print ("pitch", pitch, "roll", roll, "yaw", yaw)
 
-    yaw = yaw/360*65535
+
+    #yaw = yaw/360*65535
 
     #roll va de 0 a 360
     if roll > 350 or roll < 10:
         roll = 0
 
     if roll < 180:
-        roll = roll/180*65535
+        roll = (roll-10)/170*65535
 
 
     if roll >= 180:
-        roll = roll/180*65535
+        roll = -((360-roll)/170*65535)
 
 
 
@@ -66,11 +71,11 @@ def getpos():
         pitch = 0
 
     if pitch < 180:
-        pitch = pitch/180*65535
+        pitch = (pitch-10)/170*65535
 
 
     if pitch >= 180:
-        pitch = pitch/180*65535
+        pitch = -((360-pitch)/170*65535)
 
 
 
@@ -79,7 +84,8 @@ def getpos():
 
 
 
-
+pitch = pitch/4 #roll va de 0 a 12000 
+roll = roll/4
 
 
 
@@ -132,7 +138,7 @@ while 0 == 0:
 
     threading.Thread(target = getpos).start()
 
-    print ("pitch", pitch, "roll mod", roll, "yaw", yaw)
+    #print ("pitch", pitch, "roll mod", roll, "yaw", yaw)
 
 
 
@@ -146,11 +152,14 @@ while 0 == 0:
     #d = (v, 255, 0)
 
 
-    if puissance > 65535:
-        puissance = 65535
+    if puissance > 65534:
+        puissance = 65534
 
 
     print ("puissance", puissance)
+
+
+    print ("donnee envoye: pitch", pitch, "roll", roll, "puissance", puissance)
 
 
     c.commander.send_setpoint(0, 0, 0, 0)
@@ -163,12 +172,3 @@ while 0 == 0:
 
 
 #c.commander.send_setpoint(0, 0, 0, 20000)
-
-
-
-
-
-
-
-
-
