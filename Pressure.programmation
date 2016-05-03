@@ -1,0 +1,30 @@
+This is the code (python) to take the pressure of your crazyflie2.0 with the raspberryPI2 and the CrazyRadioPA it's a an easy code,
+all people can understand this code, enjoy yourself guys :D
+
+
+import logging
+import sys
+import time
+from threading import Timer
+
+sys.path.append("../src")
+sys.path.append("../src/cflib")
+import cflib.crtp
+from cfclient.utils.logconfigreader import LogConfig
+from cflib.crazyflie import Crazyflie
+
+def log_data(timestamp, data, logconf):
+        """Callback froma the log API when data arrives"""
+        print("[%d][%s]: %s" % (timestamp, logconf.name, data))
+
+
+cflib.crtp.init_drivers()
+cf = Crazyflie()
+cf.open_link("radio://0/80/250K")
+time.sleep(3)
+
+conf = LogConfig(name="Stabilizer", period_in_ms=10)
+conf.add_variable("baro.aslLong", "float")
+conf.data_received_cb.add_callback(log_data)
+cf.log.add_config(conf)
+conf.start()
