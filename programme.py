@@ -16,7 +16,7 @@ stick = stick.SenseStick()
 pitch = 0
 roll = 0
 yaw = 0
-puissance = 15000
+puissance = 000
 
 def joystick():
     global puissance
@@ -35,6 +35,13 @@ def joystick():
             puissance = puissance - 1000
 
         
+        if puissance > 60000:
+            puissance = 60000
+
+
+
+
+        
 
 
 
@@ -44,38 +51,77 @@ def getpos():
     global yaw
 
     pitch, roll, yaw = sense.get_orientation().values()
-    if pitch < 165:
-        pitch = (pitch - 165) + 360
-    if pitch > 165:
-        pitch = pitch - 165
+
+    p = (pitch + 360) % 360
+    print ("pitch=",p)
+
+
+#    if pitch < 165:
+        #pitch = (pitch - 165) + 360
+#        p = (p + 360) % 360
+#        print ("pitch=",p)
+#    if pitch > 165:
+#        pitch = pitch - 165
     print ("pitch", pitch, "roll", roll, "yaw", yaw)
 
 
     #yaw = yaw/360*65535
 
     #roll va de 0 a 360
-    if roll > 350 or roll < 10:
-        roll = 0
+#    if roll > 350 or roll < 10:
+#        roll = 0
 
-    if roll < 180:
-        roll = (roll-10)/170*65535
-
-
-    if roll >= 180:
-        roll = -((360-roll)/170*65535)
+#    if roll < 180:
+#        roll = (roll-10)/170*65535
 
 
+#    if roll >= 180:
+#        roll = -((360-roll)/170*65535)
 
 
-    if pitch > 350 or pitch < 10:
-        pitch = 0
-
-    if pitch < 180:
-        pitch = (pitch-10)/170*65535
 
 
-    if pitch >= 180:
-        pitch = -((360-pitch)/170*65535)
+#    if pitch > 350 or pitch < 10:
+#        pitch = 0
+
+#    if pitch < 180:
+#        pitch = (pitch-10)/170*65535
+
+
+#    if pitch >= 180:
+#        pitch = -((360-pitch)/170*65535)
+
+
+
+
+    if 0 < roll < 180:
+        roll = roll / 4
+
+
+    if 180 <= roll < 360:
+        roll = (roll - 360) / 4
+
+
+
+
+
+
+
+
+    if 0 < pitch < 180:
+        pitch = pitch / 4
+
+
+    if 180 <= pitch < 360:
+        pitch = (pitch - 360) / 4
+
+
+
+
+
+
+
+
 
 
 
@@ -84,8 +130,8 @@ def getpos():
 
 
 
-pitch = pitch/4 #roll va de 0 a 12000 
-roll = roll/4
+#pitch = pitch/4 #roll va de 0 a 12000 
+#roll = roll/4
 
 
 
@@ -111,13 +157,7 @@ ecran = [
 
 
 
-
-
-
-
 threading.Thread(target = joystick).start()
-
-
 
 
 
@@ -144,10 +184,6 @@ while 0 == 0:
 
 
 
-
-
-
-
     #sense.set_pixels(ecran)
     #d = (v, 255, 0)
 
@@ -167,7 +203,6 @@ while 0 == 0:
     c.commander.send_setpoint(pitch, roll, 0, puissance)
     time.sleep(0.1)
     c.commander.send_setpoint(0, 0, 0, 0)
-
 
 
 
