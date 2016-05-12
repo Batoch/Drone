@@ -18,6 +18,18 @@ roll = 0
 yaw = 0
 puissance = 000
 
+
+def orientation():
+    global pitch
+    global roll
+    global yaw
+
+    while True:
+        pitch,roll,yaw = sense.get_orientation().values()
+        print("pitch=%s, roll=%s, yaw=%s" % (pitch, yaw, roll))
+
+    
+
 def joystick():
     global puissance
     while True:
@@ -34,11 +46,15 @@ def joystick():
         if joystick == 108: #bas
             puissance = puissance - 1000
 
+        if joystick == 106:
+            puissance = 0
+
         
         if puissance > 60000:
             puissance = 60000
 
-
+        if puissance < 1:
+            puissance = 1
 
 
         
@@ -50,10 +66,10 @@ def getpos():
     global roll
     global yaw
 
-    pitch, roll, yaw = sense.get_orientation().values()
+    pitch, yaw, roll = sense.get_orientation().values()
 
-    p = (pitch + 360) % 360
-    print ("pitch=",p)
+#    p = (pitch + 360) % 360
+#    print ("pitch=",p)
 
 
 #    if pitch < 165:
@@ -63,6 +79,7 @@ def getpos():
 #    if pitch > 165:
 #        pitch = pitch - 165
     print ("pitch", pitch, "roll", roll, "yaw", yaw)
+#    print("pitch=%s, roll=%s, yaw=%s" % (pitch, roll, yaw))
 
 
     #yaw = yaw/360*65535
@@ -95,11 +112,11 @@ def getpos():
 
 
     if 0 < roll < 180:
-        roll = roll / 4
+        roll = roll / 2
 
 
     if 180 <= roll < 360:
-        roll = (roll - 360) / 4
+        roll = (roll - 360) / 2
 
 
 
@@ -109,11 +126,11 @@ def getpos():
 
 
     if 0 < pitch < 180:
-        pitch = pitch / 4
+        pitch = pitch / 2
 
 
     if 180 <= pitch < 360:
-        pitch = (pitch - 360) / 4
+        pitch = (pitch - 360) / 2
 
 
 
@@ -158,7 +175,7 @@ ecran = [
 
 
 threading.Thread(target = joystick).start()
-
+#threading.Thread(target = orientation).start()
 
 
 
@@ -192,7 +209,7 @@ while 0 == 0:
         puissance = 65534
 
 
-    print ("puissance", puissance)
+#    print ("puissance", puissance)
 
 
     print ("donnee envoye: pitch", pitch, "roll", roll, "puissance", puissance)
